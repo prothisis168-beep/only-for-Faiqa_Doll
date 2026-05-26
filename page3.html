@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Chapter II ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{min-height:100%;background:#080401;overflow-x:hidden;}
+body{font-family:'Lato',sans-serif;cursor:none;}
+.cursor{position:fixed;z-index:9999;pointer-events:none;font-size:20px;transform:translate(-5px,-20px);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.exit-overlay{position:fixed;inset:0;background:#080401;z-index:1000;opacity:0;pointer-events:none;transition:opacity .6s;}
+.exit-overlay.active{opacity:1;pointer-events:all;}
+
+.wrap{min-height:100vh;padding:56px 20px 60px;display:flex;flex-direction:column;align-items:center;}
+
+.page-header{text-align:center;max-width:600px;width:100%;margin-bottom:36px;animation:fadeIn .8s .1s both;}
+.ch-label{font-family:'Lato',sans-serif;font-size:10px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:rgba(200,148,58,.4);margin-bottom:10px;}
+.page-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(28px,5.5vw,48px);color:#f0e4cc;line-height:1.1;margin-bottom:8px;}
+.page-title em{font-style:italic;color:#c8943a;}
+.page-sub{font-family:'Lato',sans-serif;font-size:13px;font-weight:300;color:rgba(245,232,194,.28);letter-spacing:1.5px;}
+
+/* Dossier card */
+.dossier{max-width:640px;width:100%;background:linear-gradient(170deg,#1e1400,#150f00);border:1px solid rgba(200,148,58,.13);padding:30px 26px 22px;position:relative;animation:fadeIn .7s .2s both;}
+.dossier::before{content:'CLASSIFIED';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-22deg);font-family:'Lato',sans-serif;font-weight:700;font-size:clamp(24px,5vw,52px);color:rgba(120,20,20,.06);letter-spacing:8px;pointer-events:none;white-space:nowrap;}
+.conf-stamp{position:absolute;top:16px;right:18px;border:2px solid rgba(120,20,20,.38);padding:4px 9px;font-family:'Lato',sans-serif;font-weight:700;font-size:8px;letter-spacing:3px;color:rgba(180,40,40,.48);text-transform:uppercase;transform:rotate(8deg);}
+.dos-hdr{display:flex;align-items:center;gap:16px;padding-bottom:16px;margin-bottom:18px;border-bottom:1px solid rgba(200,148,58,.1);}
+.dos-icon{width:54px;height:54px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 40% 35%,#2a1a00,#150c00);border:1px solid rgba(200,148,58,.18);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.dos-name{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;color:#f0e4cc;letter-spacing:2px;}
+.dos-id{font-family:'Lato',sans-serif;font-size:9px;font-weight:300;color:rgba(200,148,58,.36);letter-spacing:3px;margin-top:3px;}
+
+/* Field rows — CLICK to reveal, not hover */
+.field{
+  display:flex;gap:13px;align-items:flex-start;
+  padding:14px 8px;border-bottom:1px solid rgba(200,148,58,.06);
+  cursor:none;position:relative;
+  transition:background .25s;
+  -webkit-tap-highlight-color:transparent;
+}
+.field:last-child{border-bottom:none;}
+.field.open{background:rgba(200,148,58,.03);}
+/* Subtle click feedback */
+.field:active{background:rgba(200,148,58,.06);}
+
+.f-icon{font-size:17px;flex-shrink:0;padding-top:2px;transition:filter .3s;filter:grayscale(.6);}
+.field.open .f-icon{filter:grayscale(0);}
+.f-key{font-family:'Lato',sans-serif;font-size:10px;font-weight:700;color:rgba(200,148,58,.42);min-width:98px;flex-shrink:0;padding-top:3px;letter-spacing:2px;text-transform:uppercase;line-height:1.4;}
+.f-val{font-family:'Lato',sans-serif;font-size:14px;font-weight:300;color:rgba(245,232,194,.12);line-height:1.75;transition:color .5s;flex:1;}
+.f-val.open{color:rgba(245,232,194,.82);}
+.redacted{display:inline-block;background:rgba(245,232,194,.14);color:transparent;border-radius:1px;padding:0 2px;user-select:none;}
+
+/* Tap hint — pulsing so she knows to tap */
+.tap-hint{
+  font-family:'Lato',sans-serif;font-size:10px;font-weight:300;
+  color:rgba(200,148,58,.22);text-align:center;
+  margin-top:16px;letter-spacing:2px;
+  animation:tapHint 2s ease-in-out infinite;
+}
+@keyframes tapHint{0%,100%{opacity:.22;}50%{opacity:.55;}}
+
+/* Reveal counter */
+.reveal-count{
+  font-family:'Lato',sans-serif;font-size:10px;font-weight:700;
+  text-align:center;margin-top:10px;
+  color:rgba(200,148,58,.3);letter-spacing:3px;
+  transition:color .3s;
+}
+.reveal-count.done{color:rgba(200,148,58,.6);}
+
+.next-btn{display:inline-block;margin-top:24px;padding:13px 34px;background:transparent;border:1px solid rgba(200,148,58,.22);color:rgba(200,148,58,.6);font-family:'Lato',sans-serif;font-weight:700;font-size:11px;letter-spacing:4px;text-transform:uppercase;cursor:none;text-decoration:none;transition:all .4s;animation:fadeIn .7s .8s both;opacity:0;}
+.next-btn:hover{border-color:rgba(200,148,58,.6);color:rgba(200,148,58,1);background:rgba(200,148,58,.05);letter-spacing:5px;}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor">🪶</div>
+<div class="exit-overlay" id="ov"></div>
+
+<div class="wrap">
+  <div class="page-header">
+    <div class="ch-label">· Chapter II ·</div>
+    <h1 class="page-title">Things I know<br>about <em>you.</em> 🗂️</h1>
+    <p class="page-sub">tap each row to reveal</p>
+  </div>
+
+  <div class="dossier">
+    <div class="conf-stamp">Classified</div>
+    <div class="dos-hdr">
+      <div class="dos-icon">🌙</div>
+      <div>
+        <div class="dos-name">FAIQA</div>
+        <div class="dos-id">FILE #0001 &nbsp;·&nbsp; Eid 2026 &nbsp;·&nbsp; tap rows to read</div>
+      </div>
+    </div>
+    <div id="fields"></div>
+    <p class="tap-hint">tap any row to reveal 🔏</p>
+    <p class="reveal-count" id="rc">0 / 7 revealed</p>
+  </div>
+  <a href="page4.html" class="next-btn" id="nb">Chapter III &nbsp; →</a>
+</div>
+
+<script>
+// Fresh Eid-focused content — no old chat lines
+const rows=[
+  {k:"She Prays",e:"🤲",v:"She makes dua and she means it. Every word. That kind of sincerity is rare — and it shows in how she carries herself."},
+  {k:"CA Journey",e:"📚",v:"Started on her own timeline. Going with full force. The late start means nothing — the chull and the commitment mean everything."},
+  {k:"Quiet Strength",e:"🌙",v:"She doesn't announce what she's going through. She just keeps going. That's not weakness hidden — that's strength wearing everyday clothes."},
+  {k:"Real Name",e:"✦",v:"Faiqa. Not given to many. Protected carefully. The people who have it are the ones who actually matter to her."},
+  {k:"How She Cares",e:"💛",v:"She notices when something is wrong before you say a word. She stays. She checks in. She doesn't make a big deal of it — she just does it."},
+  {k:"The Trust",e:"🔒",v:"Takes a long time to trust. Guards herself well. When she lets someone in, it means something real. It is not taken lightly — by her or by them."},
+  {k:"This Eid",e:"🌸",v:"She deserves every happiness this Eid brings. Every blessing in the dua. Every moment of peace. All of it — fully, completely, without condition."},
+];
+let revealed=0;
+const container=document.getElementById('fields');
+const rc=document.getElementById('rc');
+const nb=document.getElementById('nb');
+
+rows.forEach(({k,e,v})=>{
+  const row=document.createElement('div');row.className='field';
+  const preview='█'.repeat(Math.min(Math.floor(v.length/5),18));
+  row.innerHTML=`<span class="f-icon">${e}</span><span class="f-key">${k}</span><span class="f-val"><span class="redacted">${preview}</span></span>`;
+
+  // Both click AND touch — for mobile
+  function revealRow(){
+    if(row.classList.contains('open'))return;
+    row.classList.add('open');
+    const fv=row.querySelector('.f-val');
+    fv.innerHTML=v;fv.classList.add('open');
+    revealed++;
+    rc.textContent=`${revealed} / ${rows.length} revealed`;
+    if(revealed===rows.length){
+      rc.classList.add('done');
+      rc.textContent='All revealed ✦';
+      nb.style.opacity='1';
+    }
+    // Ink spark
+    const rect=row.getBoundingClientRect();
+    ['·','✦','◆'].forEach((s,i)=>{
+      const d=document.createElement('div');
+      d.style.cssText=`position:fixed;left:${rect.left+24}px;top:${rect.top+rect.height/2}px;font-size:10px;color:rgba(200,148,58,.7);pointer-events:none;z-index:999;transition:all .65s ease;`;
+      d.textContent=s;document.body.appendChild(d);
+      setTimeout(()=>{d.style.transform=`translate(${(i-1)*26}px,-20px) scale(0)`;d.style.opacity='0';},20);
+      setTimeout(()=>d.remove(),720);
+    });
+  }
+  row.addEventListener('click',revealRow);
+  row.addEventListener('touchend',function(e){e.preventDefault();revealRow();},{passive:false});
+  container.appendChild(row);
+});
+
+const cur=document.getElementById('cursor');
+document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
+document.getElementById('nb').addEventListener('click',function(e){
+  e.preventDefault();document.getElementById('ov').classList.add('active');
+  setTimeout(()=>window.location.href=this.href,620);
+});
+</script>
+</body>
+</html>

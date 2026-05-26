@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Eid Mubarak — Faiqa 🌙</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--gold:#c8943a;--gold-l:#f5c842;--cream:#f5ead0;--ink:#050200;}
+html,body{height:100%;background:var(--ink);overflow:hidden;}
+body{font-family:'Lato',sans-serif;cursor:none;}
+.cursor{position:fixed;z-index:9999;pointer-events:none;font-size:20px;transform:translate(-5px,-20px);filter:drop-shadow(0 0 4px rgba(255,180,50,.4));}
+
+/* Canvas bg */
+#bgc{position:fixed;inset:0;z-index:0;}
+.amb{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 55% 60% at 50% 55%,rgba(45,22,0,.55),transparent 65%);
+  animation:ambP 5s ease-in-out infinite;}
+@keyframes ambP{0%,100%{opacity:.55;}50%{opacity:1;}}
+
+/* Mosque — pointer-events:none so it never blocks clicks */
+.mosque{
+  position:fixed;bottom:0;left:0;right:0;z-index:2;
+  pointer-events:none !important;
+  display:flex;justify-content:center;
+}
+.mosque svg{width:100%;max-width:1000px;}
+
+/* ══ SCREEN 1: MOON TAP ══ */
+#screen-moon{
+  position:fixed;inset:0;z-index:10;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:20px;text-align:center;
+  /* ABOVE mosque */
+}
+
+.moon-wrap{position:relative;width:110px;height:110px;}
+.halo1,.halo2{position:absolute;border-radius:50%;border:1px solid rgba(200,148,58,.15);pointer-events:none;}
+.halo1{inset:-16px;animation:hP 4s ease-in-out infinite;}
+.halo2{inset:-30px;border-color:rgba(200,148,58,.07);animation:hP 4s ease-in-out infinite .8s;}
+@keyframes hP{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.08);opacity:.4;}}
+
+.moon{
+  width:110px;height:110px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fffce0 0%,#f5c842 20%,#c8832a 55%,#5a2a08 86%,#1e0a02 100%);
+  box-shadow:
+    inset -18px -12px 30px rgba(0,0,0,.65),
+    inset 12px 8px 20px rgba(255,240,180,.22),
+    0 0 55px rgba(200,148,58,.22),0 0 110px rgba(200,148,58,.1);
+  position:relative;overflow:hidden;
+  animation:mF 6s ease-in-out infinite;
+  cursor:none;transition:box-shadow .3s,transform .3s;
+  z-index:20; /* ensure above mosque */
+}
+.moon:hover{transform:scale(1.07);box-shadow:inset -18px -12px 30px rgba(0,0,0,.65),0 0 75px rgba(200,148,58,.38);}
+.moon::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 32% 28%,rgba(255,255,220,.28),transparent 50%);pointer-events:none;}
+.moon::after{content:'';position:absolute;width:22%;height:22%;top:20%;left:15%;border-radius:50%;background:rgba(0,0,0,.18);box-shadow:32px 20px 0 rgba(0,0,0,.14);pointer-events:none;}
+@keyframes mF{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+
+.tap-txt{
+  font-family:'Lato',sans-serif;font-size:10px;font-weight:700;
+  color:rgba(200,148,58,.32);letter-spacing:4px;text-transform:uppercase;
+  animation:br 2.2s ease-in-out infinite;z-index:20;
+}
+@keyframes br{0%,100%{opacity:.32;}50%{opacity:.72;}}
+
+/* ══ SCREEN 2: EID CONTENT ══ */
+#screen-eid{
+  position:fixed;inset:0;z-index:10;
+  display:none;overflow-y:auto;
+  /* padding-bottom for mosque height */
+  padding:0 0 200px;
+}
+.eid-inner{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;
+  padding:55px 20px 0;
+  text-align:center;
+}
+
+/* TOP TAG */
+.top-tag{font-family:'Lato',sans-serif;font-size:10px;font-weight:700;letter-spacing:8px;text-transform:uppercase;color:rgba(200,148,58,.5);margin-bottom:10px;animation:tA .8s .1s both;}
+@keyframes tA{from{opacity:0;letter-spacing:14px;}to{opacity:1;letter-spacing:8px;}}
+
+.arabic{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,4vw,26px);color:rgba(200,148,58,.75);letter-spacing:3px;margin-bottom:6px;animation:tA .8s .22s both;}
+
+/* TITLE — responsive so MUBARAK never clips */
+.eid-title{
+  font-family:'Cormorant Garamond',serif;font-weight:700;
+  font-size:clamp(40px,11vw,128px);
+  line-height:.9;
+  background:linear-gradient(170deg,#fff8e0 0%,#f5c842 35%,#c8832a 65%,#8b4010 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 45px rgba(200,140,30,.28));
+  margin-bottom:10px;
+  animation:eR .9s .38s cubic-bezier(.16,1,.3,1) both;
+  width:100%;max-width:700px;word-break:break-word;
+}
+@keyframes eR{from{opacity:0;transform:scale(.88) translateY(22px);}to{opacity:1;transform:scale(1) translateY(0);}}
+
+.for-name{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(16px,3.5vw,28px);color:rgba(245,232,194,.5);animation:tA .8s .58s both;margin-bottom:28px;}
+
+/* DUA */
+.dua-box{background:rgba(255,210,80,.04);border:1px solid rgba(200,148,58,.14);border-top:2px solid rgba(200,148,58,.28);padding:20px 26px;max-width:440px;width:100%;margin-bottom:28px;animation:fU .7s .72s both;}
+@keyframes fU{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.dua-ar{font-family:'Cormorant Garamond',serif;font-size:clamp(15px,3vw,21px);color:rgba(200,148,58,.8);direction:rtl;line-height:2.1;margin-bottom:10px;}
+.dua-tr{font-family:'Lato',sans-serif;font-size:12px;font-weight:300;color:rgba(245,232,194,.38);line-height:1.85;}
+
+/* CARE CARD */
+.care-section{max-width:520px;width:100%;margin-bottom:28px;animation:fU .7s .85s both;}
+.care-label{font-family:'Lato',sans-serif;font-size:9px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:rgba(200,148,58,.28);text-align:center;margin-bottom:14px;}
+.care-card{background:rgba(255,210,80,.03);border:1px solid rgba(200,148,58,.12);padding:26px 24px;position:relative;}
+.care-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(200,148,58,.3),transparent);}
+.care-q{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(15px,2.8vw,19px);color:rgba(245,232,194,.72);line-height:1.9;margin-bottom:16px;}
+.care-q .g{color:rgba(200,148,58,.85);font-style:normal;}
+.cdiv{display:flex;align-items:center;gap:10px;margin:14px 0;opacity:.3;}
+.cdiv::before,.cdiv::after{content:'';flex:1;height:1px;background:rgba(200,148,58,.4);}
+.cdiv span{font-size:9px;color:rgba(200,148,58,.6);}
+.care-n{font-family:'Lato',sans-serif;font-size:13px;font-weight:300;color:rgba(245,232,194,.5);line-height:1.85;}
+.care-n .hl{color:rgba(245,232,194,.82);font-weight:400;}
+.care-sig{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:rgba(200,148,58,.45);text-align:right;margin-top:14px;padding-top:12px;border-top:1px solid rgba(200,148,58,.1);}
+
+/* PROMISES */
+.pr-section{max-width:520px;width:100%;margin-bottom:28px;animation:fU .7s 1s both;}
+.pr-label{font-family:'Lato',sans-serif;font-size:9px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:rgba(200,148,58,.28);text-align:center;margin-bottom:12px;}
+.pr-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;}
+.pr-scroll::-webkit-scrollbar{display:none;}
+.pr-card{flex-shrink:0;width:158px;background:rgba(200,148,58,.05);border:1px solid rgba(200,148,58,.1);padding:14px 12px;cursor:none;transition:all .3s;}
+.pr-card:hover{background:rgba(200,148,58,.1);border-color:rgba(200,148,58,.25);transform:translateY(-3px);}
+.pr-e{font-size:18px;display:block;margin-bottom:7px;}
+.pr-t{font-family:'Lato',sans-serif;font-size:12px;font-weight:300;color:rgba(245,232,194,.65);line-height:1.6;}
+
+/* CELEBRATE */
+.cel{padding:15px 52px;background:linear-gradient(160deg,#8b1a1a,#5c0f0f);border:1px solid rgba(200,148,58,.3);color:var(--cream);font-family:'Lato',sans-serif;font-weight:700;font-size:12px;letter-spacing:5px;text-transform:uppercase;cursor:none;transition:all .4s;position:relative;overflow:hidden;animation:fU .7s 1.1s both;margin-bottom:18px;}
+.cel::before{content:'';position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,200,100,.15),transparent);transform:translateY(-100%);transition:transform .45s;}
+.cel:hover::before{transform:translateY(0);}
+.cel:hover{box-shadow:0 8px 36px rgba(120,0,0,.5);letter-spacing:6px;}
+
+#msgs{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(16px,3vw,20px);color:rgba(200,148,58,.62);min-height:46px;line-height:1.8;transition:opacity .4s;text-align:center;max-width:440px;animation:fU .7s 1.15s both;margin-bottom:8px;}
+
+.back{display:block;margin-top:12px;font-family:'Lato',sans-serif;font-size:9px;font-weight:300;letter-spacing:3px;color:rgba(245,232,194,.14);text-decoration:none;text-transform:uppercase;cursor:none;transition:color .3s;margin-bottom:16px;}
+.back:hover{color:rgba(245,232,194,.38);}
+
+#conf{position:fixed;inset:0;pointer-events:none;z-index:9990;display:none;}
+</style>
+</head>
+<body>
+<canvas id="bgc"></canvas>
+<canvas id="conf"></canvas>
+<div class="amb"></div>
+<div class="cursor" id="cursor">🪶</div>
+
+<!-- Mosque — pointer-events:none, below content -->
+<div class="mosque">
+<svg viewBox="0 0 1000 210" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+  <rect x="0" y="205" width="1000" height="5" fill="rgba(200,148,58,.45)"/>
+  <path d="M380 205 L380 105 Q380 20 500 20 Q620 20 620 105 L620 205 Z" fill="rgba(245,232,194,.82)"/>
+  <ellipse cx="500" cy="20" rx="28" ry="11" fill="rgba(200,148,58,.6)"/>
+  <path d="M255 205 L255 125 Q255 72 308 72 Q361 72 361 125 L361 205 Z" fill="rgba(245,232,194,.6)"/>
+  <ellipse cx="308" cy="72" rx="17" ry="7" fill="rgba(200,148,58,.42)"/>
+  <path d="M639 205 L639 125 Q639 72 692 72 Q745 72 745 125 L745 205 Z" fill="rgba(245,232,194,.6)"/>
+  <ellipse cx="692" cy="72" rx="17" ry="7" fill="rgba(200,148,58,.42)"/>
+  <rect x="175" y="35" width="30" height="170" fill="rgba(245,232,194,.8)"/>
+  <ellipse cx="190" cy="35" rx="15" ry="27" fill="rgba(245,232,194,.8)"/>
+  <line x1="190" y1="6" x2="190" y2="0" stroke="rgba(200,148,58,.7)" stroke-width="2.5"/>
+  <circle cx="190" cy="6" r="4" fill="rgba(200,148,58,.7)"/>
+  <rect x="795" y="35" width="30" height="170" fill="rgba(245,232,194,.8)"/>
+  <ellipse cx="810" cy="35" rx="15" ry="27" fill="rgba(245,232,194,.8)"/>
+  <line x1="810" y1="6" x2="810" y2="0" stroke="rgba(200,148,58,.7)" stroke-width="2.5"/>
+  <circle cx="810" cy="6" r="4" fill="rgba(200,148,58,.7)"/>
+  <rect x="85" y="72" width="20" height="133" fill="rgba(245,232,194,.48)"/>
+  <ellipse cx="95" cy="72" rx="10" ry="19" fill="rgba(245,232,194,.48)"/>
+  <rect x="895" y="72" width="20" height="133" fill="rgba(245,232,194,.48)"/>
+  <ellipse cx="905" cy="72" rx="10" ry="19" fill="rgba(245,232,194,.48)"/>
+  <path d="M493 24 C486 36 491 50 504 48 C496 48 486 36 492 26 Z" fill="rgba(200,148,58,.9)"/>
+  <path d="M452 205 L452 162 Q452 142 472 142 Q492 142 492 162 L492 205" fill="rgba(0,0,0,.38)"/>
+  <path d="M508 205 L508 162 Q508 142 528 142 Q548 142 548 162 L548 205" fill="rgba(0,0,0,.38)"/>
+</svg>
+</div>
+
+<!-- SCREEN 1: Moon -->
+<div id="screen-moon">
+  <div class="moon-wrap">
+    <div class="halo1"></div>
+    <div class="halo2"></div>
+    <div class="moon" id="moonBtn"></div>
+  </div>
+  <p class="tap-txt">tap the moon 🌙</p>
+</div>
+
+<!-- SCREEN 2: Eid Content -->
+<div id="screen-eid">
+  <div class="eid-inner">
+    <p class="top-tag">✦ &nbsp; Eid ul-Adha 2026 &nbsp; ✦</p>
+    <p class="arabic">عید مبارک</p>
+    <div class="eid-title">EID<br>MUBARAK</div>
+    <p class="for-name">for Faiqa &nbsp;·&nbsp; always 🌙</p>
+
+    <div class="dua-box">
+      <p class="dua-ar">رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً</p>
+      <p class="dua-tr">"Our Lord, grant us good in this world and good in the Hereafter,<br>and protect us from the punishment of the Fire."<br><em>— Al-Baqarah 2:201</em></p>
+    </div>
+
+    <div class="care-section">
+      <p class="care-label">· a few honest words ·</p>
+      <div class="care-card">
+        <p class="care-q">
+          Faiqa — this Eid, I don't just want to say <span class="g">Eid Mubarak.</span><br><br>
+          I want you to know that you are someone I make dua for — quietly, genuinely, every single day. Not because I have to. Because you matter to me in a way that's hard to explain.
+        </p>
+        <div class="cdiv"><span>✦</span></div>
+        <p class="care-n">
+          I see how hard you work. I see what you carry. I see the girl who stays up late and still shows up — for her dreams, for the people she loves.<br><br>
+          <span class="hl">You deserve someone who notices that.</span> Someone who checks on you without being asked. Someone who says "khayal rakhna" and genuinely, truly means it.<br><br>
+          I want to be that person — not just on Eid — but on every ordinary day that comes after this one.<br><br>
+          InshaaAllah, one day I will stand in front of your family and ask for your hand — the right way, the halal way, the way you deserve.<br><br>
+          Until that day — this dua, this moment, these words — <span class="hl">all of it is only for you. 🌙</span>
+        </p>
+        <div class="care-sig">— Waqas &nbsp;·&nbsp; hamesha ✦</div>
+      </div>
+    </div>
+
+    <div class="pr-section">
+      <p class="pr-label">· promises · swipe →</p>
+      <div class="pr-scroll" id="prs"></div>
+    </div>
+
+    <button class="cel" onclick="celebrate()">✦ &nbsp; Celebrate &nbsp; ✦</button>
+    <div id="msgs"></div>
+    <a href="index.html" class="back">↩ &nbsp; read from the beginning</a>
+  </div>
+</div>
+
+<script>
+/* ── CURSOR ── */
+const cur=document.getElementById('cursor');
+document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
+
+/* ── STARFIELD CANVAS ── */
+(function(){
+  const cv=document.getElementById('bgc'),cx=cv.getContext('2d');
+  function rs(){cv.width=innerWidth;cv.height=innerHeight;}
+  rs();window.addEventListener('resize',rs);
+  const st=[];
+  for(let i=0;i<250;i++)st.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*1.5+.2,o:Math.random()*.65+.1,s:.003+Math.random()*.006,d:Math.random()>.5?1:-1,g:Math.random()>.82});
+  const ln=[];
+  for(let i=0;i<24;i++)ln.push({x:Math.random()*cv.width,y:cv.height+Math.random()*500,r:1+Math.random()*2.8,vy:-(0.22+Math.random()*.7),vx:(Math.random()-.5)*.4,o:0,mO:.38+Math.random()*.32,lf:0,mL:260+Math.random()*460});
+  function draw(){
+    cx.clearRect(0,0,cv.width,cv.height);
+    const bg=cx.createRadialGradient(cv.width/2,cv.height*.7,0,cv.width/2,cv.height*.4,cv.width*.9);
+    bg.addColorStop(0,'#1c0e02');bg.addColorStop(.55,'#0e0600');bg.addColorStop(1,'#040200');
+    cx.fillStyle=bg;cx.fillRect(0,0,cv.width,cv.height);
+    st.forEach(s=>{s.o+=s.s*s.d;if(s.o>.82||s.o<.06)s.d*=-1;cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fillStyle=s.g?`rgba(255,215,110,${s.o})`:`rgba(255,255,255,${s.o*.7})`;cx.fill();});
+    ln.forEach(l=>{l.x+=l.vx;l.y+=l.vy;l.lf++;if(l.lf<45)l.o=l.mO*(l.lf/45);else if(l.lf>l.mL-80)l.o=l.mO*((l.mL-l.lf)/80);if(l.lf>=l.mL){l.lf=0;l.x=Math.random()*cv.width;l.y=cv.height+20;l.o=0;}const g=cx.createRadialGradient(l.x,l.y,0,l.x,l.y,l.r*5);g.addColorStop(0,`rgba(255,195,65,${l.o})`);g.addColorStop(.5,`rgba(255,125,18,${l.o*.3})`);g.addColorStop(1,'rgba(255,70,0,0)');cx.beginPath();cx.arc(l.x,l.y,l.r,0,Math.PI*2);cx.fillStyle=g;cx.fill();});
+    requestAnimationFrame(draw);
+  }
+  draw();
+  setInterval(()=>{let sx=Math.random()*cv.width,sy=Math.random()*(cv.height*.32),lf=1;const a=Math.PI/4+Math.random()*.38,len=85+Math.random()*145;function sh(){if(lf<=0)return;lf-=.05;cx.save();cx.globalAlpha=lf*.6;cx.strokeStyle='rgba(255,238,185,.9)';cx.lineWidth=1.5;cx.beginPath();cx.moveTo(sx,sy);cx.lineTo(sx-Math.cos(a)*len,sy-Math.sin(a)*len);cx.stroke();cx.restore();sx+=Math.cos(a)*10;sy+=Math.sin(a)*10;requestAnimationFrame(sh);}sh();},3400);
+})();
+
+/* ── MOON CLICK — using addEventListener not onclick attr to ensure it fires ── */
+document.getElementById('moonBtn').addEventListener('click', function(){
+  document.getElementById('screen-moon').style.display='none';
+  const se=document.getElementById('screen-eid');
+  se.style.display='block';
+
+  // Build promises
+  const prs=[
+    {e:'🌙',t:'I will be your safe person — always, not just on good days.'},
+    {e:'🤲',t:'I will make dua for you every single day. Always.'},
+    {e:'📚',t:'I will cheer for CA Faiqa louder than anyone.'},
+    {e:'💫',t:'I will choose you in every version of the future. InshaaAllah.'},
+    {e:'🤝',t:'I will show up — halal, properly, the way you deserve.'},
+    {e:'✦',t:'Kabi mera haath na chorna. Main bhi kabhi nahi chodhunga.'},
+  ];
+  const sc=document.getElementById('prs');
+  prs.forEach(({e,t})=>{const c=document.createElement('div');c.className='pr-card';c.innerHTML=`<span class="pr-e">${e}</span><p class="pr-t">${t}</p>`;sc.appendChild(c);});
+
+  // Burst
+  const sy=['✦','🌙','◆','·','⭐'],co=['rgba(200,148,58,1)','rgba(255,255,255,.8)','rgba(245,232,194,.9)'];
+  for(let i=0;i<30;i++){setTimeout(()=>{const d=document.createElement('div');d.textContent=sy[Math.floor(Math.random()*sy.length)];const a=Math.random()*360,r=80+Math.random()*140,rd=a*Math.PI/180;d.style.cssText=`position:fixed;left:50%;top:45%;font-size:${.6+Math.random()*.9}rem;color:${co[Math.floor(Math.random()*co.length)]};pointer-events:none;z-index:9999;transition:all .9s ease;opacity:1;`;document.body.appendChild(d);setTimeout(()=>{d.style.transform=`translate(calc(-50% + ${Math.cos(rd)*r}px),calc(-50% + ${Math.sin(rd)*r}px)) scale(0)`;d.style.opacity='0';},20);setTimeout(()=>d.remove(),1000);},i*40);}
+});
+
+/* ── CELEBRATE ── */
+const celebMsgs=["Eid Mubarak, Faiqa 🌙","Taqabbal Allahu minna wa minkum ✨","Mera sakoon — ap ho. 💫","InshaaAllah — hamesha ka saath. 🤲","Boht pyari hain. Always. 🌙","Go crush that CA. Main sabse zyada khush hounga. 📚 ✦"];
+function celebrate(){
+  let i=0;const a=document.getElementById('msgs');
+  a.style.opacity='0';
+  const iv=setInterval(()=>{a.style.opacity='0';setTimeout(()=>{a.textContent=celebMsgs[i++];a.style.opacity='1';},440);if(i>=celebMsgs.length)clearInterval(iv);},1700);
+  const cc=document.getElementById('conf');cc.style.display='block';cc.width=innerWidth;cc.height=innerHeight;
+  const ctx=cc.getContext('2d');
+  const cl=['#c9943a','#f5c842','#8b1a1a','#c42a2a','#f5ead0','#fff','#e8a83a','#FFD700','#FF6B35'];
+  const pc=[];
+  for(let j=0;j<320;j++)pc.push({x:Math.random()*cc.width,y:-20,w:3+Math.random()*9,h:2.5+Math.random()*5.5,c:cl[Math.floor(Math.random()*cl.length)],rot:Math.random()*360,vx:(Math.random()-.5)*5,vy:2+Math.random()*5,vr:(Math.random()-.5)*8,lf:1});
+  function dc(){ctx.clearRect(0,0,cc.width,cc.height);let al=false;pc.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.vy+=.1;p.lf-=.003;if(p.lf>0&&p.y<cc.height){al=true;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.globalAlpha=Math.max(0,p.lf);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();}});if(al)requestAnimationFrame(dc);else cc.style.display='none';}
+  dc();
+}
+</script>
+</body>
+</html>

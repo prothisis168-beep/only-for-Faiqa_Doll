@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>The Letter ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{min-height:100%;background:#080401;overflow-x:hidden;}
+body{font-family:'Lato',sans-serif;cursor:none;}
+.cursor{position:fixed;z-index:9999;pointer-events:none;font-size:20px;transform:translate(-5px,-20px);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+.exit-overlay{position:fixed;inset:0;background:#080401;z-index:1000;opacity:0;pointer-events:none;transition:opacity .6s;}
+.exit-overlay.active{opacity:1;pointer-events:all;}
+
+.wrap{min-height:100vh;padding:52px 20px;display:flex;flex-direction:column;align-items:center;}
+
+.page-header{text-align:center;margin-bottom:36px;animation:fadeIn .8s .1s both;}
+.ch-label{font-family:'Lato',sans-serif;font-size:10px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:rgba(200,148,58,.4);margin-bottom:10px;}
+.page-title{
+  font-family:'Cormorant Garamond',serif;font-weight:700;
+  font-size:clamp(26px,5.5vw,48px);
+  color:#f0e4cc;margin-bottom:6px;
+}
+.page-title em{font-style:italic;color:#c8943a;}
+.page-sub{font-family:'Lato',sans-serif;font-size:13px;font-weight:300;color:rgba(245,232,194,.3);}
+
+/* Seal */
+.seal-scene{text-align:center;margin-bottom:28px;animation:fadeIn .8s .3s both;}
+.seal{
+  width:76px;height:76px;border-radius:50%;margin:0 auto 14px;
+  background:radial-gradient(circle at 38% 33%,#d44040,#6b0f0f);
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  cursor:none;
+  box-shadow:0 5px 22px rgba(100,0,0,.5),0 0 40px rgba(140,0,0,.12);
+  animation:sealPulse 2.5s ease-in-out infinite;
+  transition:transform .3s;border:1px solid rgba(255,120,120,.12);
+}
+.seal:hover{transform:scale(1.08);}
+@keyframes sealPulse{
+  0%,100%{box-shadow:0 5px 22px rgba(100,0,0,.5);}
+  50%{box-shadow:0 5px 36px rgba(180,0,0,.7),0 0 55px rgba(160,0,0,.18);}
+}
+.seal-lbl{font-family:'Lato',sans-serif;font-size:10px;font-weight:700;color:rgba(200,148,58,.32);letter-spacing:3px;text-transform:uppercase;}
+
+/* Parchment letter */
+.letter{
+  display:none;
+  max-width:620px;width:100%;
+  background:linear-gradient(170deg,#f8edcc,#f2e3a8 40%,#eedd9f 70%,#f5e8c0);
+  padding:44px 40px 40px;
+  box-shadow:0 6px 32px rgba(0,0,0,.5),0 24px 64px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.6);
+  position:relative;
+  animation:letterOpen .65s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@media(max-width:560px){.letter{padding:32px 24px 28px;}}
+@keyframes letterOpen{from{opacity:0;transform:scale(.88) rotateX(6deg);}to{opacity:1;transform:scale(1) rotateX(0deg);}}
+
+/* Ruled lines */
+.letter::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(transparent,transparent 31px,rgba(139,94,60,.07) 31px,rgba(139,94,60,.07) 32px);
+  margin:16px 0;
+}
+/* Red margin */
+.letter::after{
+  content:'';position:absolute;top:0;bottom:0;left:54px;
+  width:1px;background:rgba(180,60,60,.13);pointer-events:none;
+}
+
+.l-date{
+  font-family:'Lato',sans-serif;font-size:11px;font-weight:300;
+  color:rgba(58,35,10,.4);text-align:right;margin-bottom:22px;
+  position:relative;z-index:1;letter-spacing:1px;
+}
+
+/* Letter body - dark ink, readable */
+.l-body{
+  font-family:'Lato',sans-serif;font-weight:300;
+  font-size:15px;line-height:2.05;
+  color:#1c0f04;position:relative;z-index:1;min-height:60px;
+}
+.tw-cursor{
+  display:inline-block;width:1.5px;height:1em;
+  background:#3d2b10;vertical-align:middle;margin-left:1px;
+  animation:blink .7s step-end infinite;
+}
+
+.l-sig{
+  margin-top:28px;text-align:right;padding-top:14px;
+  border-top:1px solid rgba(139,94,60,.14);
+  display:none;position:relative;z-index:1;
+}
+.l-sig-name{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:rgba(58,35,10,.5);}
+.l-sig-date{font-family:'Lato',sans-serif;font-size:10px;font-weight:300;color:rgba(58,35,10,.28);letter-spacing:2px;margin-top:3px;text-transform:uppercase;}
+
+.next-wrap{text-align:center;margin-top:28px;display:none;animation:fadeIn .7s forwards;}
+.next-btn{
+  display:inline-block;padding:14px 40px;
+  background:linear-gradient(160deg,#8b1a1a,#5c0f0f);
+  border:1px solid rgba(200,148,58,.25);color:#f5ead0;
+  font-family:'Lato',sans-serif;font-weight:700;
+  font-size:11px;letter-spacing:4px;text-transform:uppercase;
+  cursor:none;text-decoration:none;transition:all .4s;
+}
+.next-btn:hover{box-shadow:0 6px 28px rgba(80,0,0,.5);letter-spacing:5px;}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor">🪶</div>
+<div class="exit-overlay" id="ov"></div>
+
+<div class="wrap">
+  <div class="page-header">
+    <div class="ch-label">· Chapter IV ·</div>
+    <h1 class="page-title">A Letter Written<br>at <em>Midnight 🌙</em></h1>
+    <p class="page-sub">tap the seal to break it open</p>
+  </div>
+
+  <div class="seal-scene" id="sealScene">
+    <div class="seal" id="sealBtn" onclick="breakSeal()">✦</div>
+    <p class="seal-lbl">Tap to unseal</p>
+  </div>
+
+  <div class="letter" id="letter">
+    <div class="l-date">Eid ul-Adha &nbsp;·&nbsp; 2026 &nbsp;·&nbsp; For Faiqa</div>
+    <div class="l-body" id="ltxt"><span class="tw-cursor"></span></div>
+    <div class="l-sig" id="lsig">
+      <div class="l-sig-name">— Waqas &nbsp; ✦</div>
+      <div class="l-sig-date">written at midnight · meant every word</div>
+    </div>
+  </div>
+
+  <div class="next-wrap" id="nextWrap">
+    <a href="page6.html" class="next-btn" id="nb">Final Chapter &nbsp; →</a>
+  </div>
+</div>
+
+<script>
+const txt=`Faiqa,
+
+I don't know exactly when it happened. At some point, you went from being someone I talked to — to being someone I thought about when I wasn't talking to you.
+
+That's not something I say lightly.
+
+You're the kind of person who doesn't make it easy to be known. You guard yourself well, and honestly? You should. Not many people deserve the real version of you.
+
+I remember the day you told me your actual name. Faiqa. You didn't make a big thing of it — but I understood what it meant. That's not something you hand to just anyone.
+
+I've thought about the coincidences too much to call them coincidences. Same date of birth. Five letters each. A song I played before I knew you. You'd say it's nothing. I disagree.
+
+This Eid, I have one dua that keeps coming back — that you get everything you've been working toward quietly. The CA, the peace, the future you're building. All of it.
+
+And somewhere in that future, I hope there's space for someone who notices things. Who remembers. Who shows up.
+
+I'm not going anywhere. ✦`;
+
+function breakSeal(){
+  document.getElementById('sealScene').style.display='none';
+  const l=document.getElementById('letter');l.style.display='block';
+  setTimeout(()=>{
+    const el=document.getElementById('ltxt');
+    el.innerHTML='<span class="tw-cursor"></span>';
+    let i=0;const ch=txt.split('');
+    function type(){
+      if(i>=ch.length){
+        el.querySelector('.tw-cursor')?.remove();
+        document.getElementById('lsig').style.display='block';
+        document.getElementById('nextWrap').style.display='block';
+        return;
+      }
+      const c=el.querySelector('.tw-cursor');
+      if(ch[i]==='\n')c.insertAdjacentHTML('beforebegin','<br>');
+      else c.insertAdjacentText('beforebegin',ch[i]);
+      i++;
+      const d=ch[i-1]==='.'||ch[i-1]===','?140:ch[i-1]==='\n'?190:23;
+      setTimeout(type,d);
+    }
+    setTimeout(type,400);
+  },350);
+}
+
+const cur=document.getElementById('cursor');
+document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
+document.getElementById('nb')?.addEventListener('click',function(e){
+  e.preventDefault();document.getElementById('ov').classList.add('active');
+  setTimeout(()=>window.location.href=this.href,620);
+});
+</script>
+</body>
+</html>

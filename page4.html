@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Chapter III ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{min-height:100%;background:#080401;overflow-x:hidden;}
+body{font-family:'Lato',sans-serif;cursor:none;}
+.cursor{position:fixed;z-index:9999;pointer-events:none;font-size:20px;transform:translate(-5px,-20px);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.exit-overlay{position:fixed;inset:0;background:#080401;z-index:1000;opacity:0;pointer-events:none;transition:opacity .6s;}
+.exit-overlay.active{opacity:1;pointer-events:all;}
+
+.wrap{min-height:100vh;padding:52px 20px 56px;max-width:880px;margin:0 auto;}
+
+.page-header{text-align:center;margin-bottom:40px;animation:fadeIn .8s .1s both;}
+.ch-label{font-family:'Lato',sans-serif;font-size:10px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:rgba(200,148,58,.4);margin-bottom:10px;}
+.page-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(26px,5vw,46px);color:#f0e4cc;line-height:1.1;margin-bottom:8px;}
+.page-title em{font-style:italic;color:#c8943a;}
+.page-sub{font-family:'Lato',sans-serif;font-size:13px;font-weight:300;color:rgba(245,232,194,.28);letter-spacing:1.5px;}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:40px;}
+@media(max-width:600px){.grid{grid-template-columns:repeat(2,1fr);gap:12px;}}
+
+/* Polaroid card — CLICK to reveal, not hover */
+.pol{
+  background:linear-gradient(160deg,#1e1600,#140f00);
+  border:1px solid rgba(200,148,58,.1);
+  padding:14px 14px 20px;
+  position:relative;cursor:none;
+  animation:fadeIn .7s both;
+  transform-origin:center bottom;
+  -webkit-tap-highlight-color:transparent;
+  transition:border-color .3s,box-shadow .3s;
+}
+/* Subtle rotation per card */
+.pol:nth-child(1){transform:rotate(-1.8deg);animation-delay:.2s;}
+.pol:nth-child(2){transform:rotate(.7deg);animation-delay:.3s;}
+.pol:nth-child(3){transform:rotate(-1.5deg);animation-delay:.4s;}
+.pol:nth-child(4){transform:rotate(1.3deg);animation-delay:.5s;}
+.pol:nth-child(5){transform:rotate(-.6deg);animation-delay:.6s;}
+.pol:nth-child(6){transform:rotate(1.6deg);animation-delay:.7s;}
+
+.pol.opened{
+  border-color:rgba(200,148,58,.3);
+  box-shadow:0 10px 36px rgba(0,0,0,.55),0 0 20px rgba(200,148,58,.06);
+}
+.pol:active{transform:rotate(0deg) scale(.97) !important;}
+
+/* Photo area */
+.photo{
+  background:rgba(0,0,0,.32);border:1px solid rgba(200,148,58,.07);
+  aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
+  font-size:40px;margin-bottom:11px;position:relative;overflow:hidden;
+}
+@media(max-width:480px){.photo{font-size:30px;}}
+.photo::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 30%,rgba(255,255,255,.04),transparent 60%);pointer-events:none;}
+
+/* Reveal overlay — hidden by default, shown on click */
+.reveal-ov{
+  position:absolute;inset:0;
+  background:rgba(8,4,1,.92);
+  display:flex;align-items:center;justify-content:center;
+  padding:12px;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s ease;
+}
+.pol.opened .reveal-ov{opacity:1;pointer-events:all;}
+.reveal-ov p{font-family:'Lato',sans-serif;font-style:italic;font-weight:300;font-size:12px;color:rgba(245,232,194,.88);line-height:1.65;text-align:center;}
+.reveal-ov .gl{font-family:'Lato',sans-serif;font-size:10px;color:rgba(200,148,58,.8);display:block;margin-top:7px;text-align:center;letter-spacing:1px;}
+
+/* Tap prompt overlay — shown before click */
+.tap-ov{
+  position:absolute;inset:0;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:8px;pointer-events:none;
+}
+.tap-badge{
+  font-family:'Lato',sans-serif;font-size:9px;font-weight:700;
+  color:rgba(200,148,58,.35);letter-spacing:3px;text-transform:uppercase;
+  background:rgba(8,4,1,.5);padding:3px 8px;
+}
+.pol.opened .tap-ov{display:none;}
+
+/* Caption */
+.cap{font-family:'Cormorant Garamond',serif;font-size:14px;color:rgba(245,232,194,.58);text-align:center;line-height:1.3;}
+.cap-date{display:block;font-family:'Lato',sans-serif;font-size:9px;color:rgba(200,148,58,.3);letter-spacing:2px;margin-top:3px;text-transform:uppercase;font-weight:400;}
+
+/* Pin */
+.pin{position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#d44040,#6b0f0f);box-shadow:0 2px 5px rgba(0,0,0,.4);}
+
+.btn-wrap{text-align:center;animation:fadeIn .7s .9s both;opacity:0;}
+.next-btn{display:inline-block;padding:13px 34px;background:transparent;border:1px solid rgba(200,148,58,.22);color:rgba(200,148,58,.62);font-family:'Lato',sans-serif;font-weight:700;font-size:11px;letter-spacing:4px;text-transform:uppercase;cursor:none;text-decoration:none;transition:all .4s;}
+.next-btn:hover{border-color:rgba(200,148,58,.6);color:rgba(200,148,58,1);background:rgba(200,148,58,.05);letter-spacing:5px;}
+
+.open-count{font-family:'Lato',sans-serif;font-size:10px;font-weight:300;color:rgba(200,148,58,.28);text-align:center;margin-bottom:16px;letter-spacing:2px;transition:color .3s;}
+.open-count.all{color:rgba(200,148,58,.55);}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor">🪶</div>
+<div class="exit-overlay" id="ov"></div>
+
+<div class="wrap">
+  <div class="page-header">
+    <div class="ch-label">· Chapter III ·</div>
+    <h1 class="page-title">Moments that<br><em>mean something.</em> 🌸</h1>
+    <p class="page-sub">tap each card to open it</p>
+  </div>
+
+  <p class="open-count" id="oc">0 of 6 opened</p>
+  <div class="grid" id="grid"></div>
+
+  <div class="btn-wrap">
+    <a href="page5.html" class="next-btn" id="nb">Chapter IV &nbsp; →</a>
+  </div>
+</div>
+
+<script>
+// Fresh Eid moments — not old chat lines
+const mems=[
+  {e:"🌙",cap:"The Moon",date:"Eid ul-Adha 2026",b:"This moon rises for you tonight. May every dua you make under it be answered. Every single one.",gl:"Eid Mubarak, Faiqa."},
+  {e:"🤲",cap:"Your Duas",date:"Always heard",b:"You pray with sincerity. That kind of connection with Allah is something you carry quietly — and it shows.",gl:"May they all come true."},
+  {e:"📚",cap:"The Journey",date:"Ongoing",b:"The CA, the late nights, the effort nobody fully sees — this Eid, know that someone sees it and is proud.",gl:"You will get there."},
+  {e:"💛",cap:"The Care",date:"Every day",b:"You care for people in ways they don't always notice. Quietly, genuinely, without needing credit for it.",gl:"You are rare for that."},
+  {e:"✦",cap:"The Name",date:"A rare gift",b:"Faiqa. You don't give that to just anyone. The people who have it are truly lucky — and they should know that.",gl:"It means the world."},
+  {e:"🌸",cap:"This Eid",date:"2026",b:"May this Eid give you peace, happiness, and a moment where you feel fully, completely loved. You deserve it.",gl:"Always. ✦"},
+];
+
+let openCount=0;
+const grid=document.getElementById('grid');
+const oc=document.getElementById('oc');
+const nb=document.getElementById('nb');
+
+mems.forEach(({e,cap,date,b,gl})=>{
+  const c=document.createElement('div');c.className='pol';
+  c.innerHTML=`
+    <div class="pin"></div>
+    <div class="photo">
+      <span>${e}</span>
+      <div class="reveal-ov"><div><p>${b}</p><span class="gl">✦ &nbsp; ${gl}</span></div></div>
+      <div class="tap-ov"><span class="tap-badge">tap to open</span></div>
+    </div>
+    <div class="cap">${cap}<span class="cap-date">${date}</span></div>`;
+
+  function openCard(){
+    if(c.classList.contains('opened'))return;
+    c.classList.add('opened');
+    // Reset rotation on open
+    c.style.transform='rotate(0deg) translateY(-6px) scale(1.02)';
+    openCount++;
+    oc.textContent=`${openCount} of ${mems.length} opened`;
+    if(openCount===mems.length){
+      oc.classList.add('all');
+      oc.textContent='All opened ✦';
+      nb.parentElement.style.opacity='1';
+    }
+    // Sparkle
+    const rect=c.getBoundingClientRect();
+    const cx=rect.left+rect.width/2,cy=rect.top+20;
+    ['✦','🌙','·'].forEach((s,i)=>{
+      const d=document.createElement('div');d.textContent=s;
+      d.style.cssText=`position:fixed;left:${cx}px;top:${cy}px;font-size:.85rem;color:rgba(200,148,58,.8);pointer-events:none;z-index:999;transition:all .7s ease;opacity:1;`;
+      document.body.appendChild(d);
+      setTimeout(()=>{const a=(i/3)*360*Math.PI/180;d.style.transform=`translate(${Math.cos(a)*40}px,${Math.sin(a)*40-30}px) scale(0)`;d.style.opacity='0';},20);
+      setTimeout(()=>d.remove(),800);
+    });
+  }
+
+  c.addEventListener('click',openCard);
+  c.addEventListener('touchend',function(e){e.preventDefault();openCard();},{passive:false});
+  grid.appendChild(c);
+});
+
+const cur=document.getElementById('cursor');
+document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
+document.getElementById('nb').addEventListener('click',function(e){
+  e.preventDefault();document.getElementById('ov').classList.add('active');
+  setTimeout(()=>window.location.href=this.href,620);
+});
+</script>
+</body>
+</html>
